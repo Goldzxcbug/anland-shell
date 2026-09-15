@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anland.shell.ds.DsCli;
+import com.anland.shell.ds.EnvVars;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -168,11 +169,14 @@ public final class ConsoleActivity extends Activity {
         reader.setDaemon(true);
         reader.start();
 
-        /* preamble: cd ~ + anland env. Echoed locally — the non-tty sh
-           prints nothing back for it. */
+        /* preamble: cd ~ + launch env (built-ins + this container's
+           customizations). Echoed locally — the non-tty sh prints nothing
+           back for it. */
+        List<String[]> customEnv = EnvVars.parse(Prefs.launchEnv(this, container));
+        List<String[]> merged = EnvVars.merge(DsCli.defaultEnvPairs(), customEnv);
         append(getString(R.string.console_env_note,
-                DsCli.XDG_RUNTIME_DIR, DsCli.WAYLAND_DISPLAY) + "\n");
-        writeLine(DsCli.consolePreamble());
+                EnvVars.format(merged).replace("\n", " ")) + "\n");
+        writeLine(DsCli.consolePreamble(customEnv));
     }
 
     private void endSession(int code) {

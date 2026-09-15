@@ -4,14 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.anland.shell.ds.AppEntry;
 import com.anland.shell.ds.ContainerState;
 import com.anland.shell.ds.DsCli;
+import com.anland.shell.ds.EnvVars;
 import com.anland.shell.ds.RootExec;
 import com.anland.shell.ui.AppsGridAdapter;
 import com.anland.shell.ui.AppsView;
@@ -82,6 +86,10 @@ public final class ShellActivity extends Activity
         userBtn = new Button(this);
         userBtn.setOnClickListener(v -> showUserMenu());
         header.addView(userBtn);
+        Button envBtn = new Button(this);
+        envBtn.setText(R.string.env_btn);
+        envBtn.setOnClickListener(v -> showEnvEditor());
+        header.addView(envBtn);
         Button refresh = new Button(this);
         refresh.setText(R.string.refresh);
         refresh.setOnClickListener(v -> refresh());
@@ -284,6 +292,59 @@ public final class ShellActivity extends Activity
                 if (container.equals(Prefs.activeContainer(this)))
                     containerUsers = users;
             });
+        });
+    }
+
+    // ------------------------------------------------------------ launch env
+
+    /** Per-container custom launch environment: KEY=VALUE lines merged over
+     *  the built-ins (same name wins, empty value removes the built-in). */
+    private void showEnvEditor() {
+        final String active = Prefs.activeContainer(this);
+
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setPadding(dp(12), dp(4), dp(12), 0);
+
+        TextView defaults = new TextView(this);
+        defaults.setTextSize(11);
+        defaults.setTextColor(getResources().getColor(R.color.text_secondary));
+        defaults.setText(getString(R.string.env_defaults_fmt,
+                EnvVars.format(DsCli.defaultEnvPairs()).replace("\n", " ")));
+        body.addView(defaults);
+
+        final EditText edit = new EditText(this);
+        edit.setTypeface(Typeface.MONOSPACE);
+        edit.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        edit.setHint(R.string.env_editor_hint);
+        edit.setMinLines(6);
+        edit.setGravity(Gravity.TOP);
+        edit.setText(Prefs.launchEnv(this, active));
+        body.addView(edit, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        final AlertDialog dlg = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.env_editor_title_fmt, active))
+                .setView(body)
+                .setNeutralButton(R.string.env_clear, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.env_save, null)
+                .create();
+        dlg.show();
+        /* button listeners are taken over after show() so an invalid line
+         * (save) or a clear does NOT dismiss the editor and lose the edit */
+        dlg.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> edit.setText(""));
+        dlg.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String text = edit.getText().toString();
+            String bad = EnvVars.invalidLine(text);
+            if (bad != null) {
+                Toast.makeText(this, getString(R.string.env_invalid_line_fmt, bad),
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            Prefs.setLaunchEnv(this, active, text);
+            Toast.makeText(this, R.string.env_saved, Toast.LENGTH_SHORT).show();
+            dlg.dismiss();
         });
     }
 

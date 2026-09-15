@@ -43,12 +43,18 @@ public final class DsCli {
     public static final String XDG_RUNTIME_DIR = "/run/anland";
     public static final String WAYLAND_DISPLAY = "wayland-0";
 
-    /** App-launch environment (anland + kgsl GPU conventions). */
-    public static final String APP_ENV =
-            "env XDG_RUNTIME_DIR=" + XDG_RUNTIME_DIR +
-            " WAYLAND_DISPLAY=" + WAYLAND_DISPLAY +
-            " MESA_LOADER_DRIVER_OVERRIDE=kgsl" +
-            " GALLIUM_DRIVER=kgsl FD_FORCE_KGSL=1";
+    /** Built-in launch environment (anland + kgsl GPU conventions); user
+     *  customizations are merged over these (see EnvVars.merge). */
+    public static List<String[]> defaultEnvPairs() {
+        List<String[]> p = new ArrayList<>();
+        p.add(new String[]{"XDG_RUNTIME_DIR", XDG_RUNTIME_DIR});
+        p.add(new String[]{"WAYLAND_DISPLAY", WAYLAND_DISPLAY});
+        p.add(new String[]{"XDG_SESSION_TYPE", "wayland"});
+        p.add(new String[]{"MESA_LOADER_DRIVER_OVERRIDE", "kgsl"});
+        p.add(new String[]{"GALLIUM_DRIVER", "kgsl"});
+        p.add(new String[]{"FD_FORCE_KGSL", "1"});
+        return p;
+    }
 
     private static volatile String dsBin;    /* resolved once: "droidspaces" or full path */
     private static volatile String dsError;  /* why resolution failed (null when ok) */
@@ -350,6 +356,17 @@ public final class DsCli {
      */
     public static RootExec.Result launchApp(String name, List<String> execArgs,
                                             String userOverride) {
+        return launchApp(name, execArgs, userOverride, null);
+    }
+
+    /**
+     * @param customEnv KEY=VALUE pairs merged over the built-in launch
+     *        environment — same name wins, empty value removes the built-in
+     *        (EnvVars.merge); null = built-ins only
+     */
+    public static RootExec.Result launchApp(String name, List<String> execArgs,
+                                            String userOverride,
+                                            List<String[]> customEnv) {
         SessionInfo s;
         if (userOverride == null || userOverride.isEmpty()) {
             s = probeSession(name, "");
@@ -362,8 +379,9 @@ public final class DsCli {
                         "user " + userOverride + " not found in container");
         }
 
-        StringBuilder sb = new StringBuilder("nohup ").append(APP_ENV)
-                .append(" XDG_SESSION_TYPE=wayland");
+        StringBuilder sb = new StringBuilder("nohup ")
+                .append(EnvVars.envPrefix(
+                        EnvVars.merge(defaultEnvPairs(), customEnv)));
         if (s != null) {
             if (s.bus != null)
                 sb.append(" DBUS_SESSION_BUS_ADDRESS=").append(ShellUtils.shQuote(s.bus));
@@ -436,11 +454,10 @@ public final class DsCli {
         };
     }
 
-    /** Preamble written to a fresh console session: anland env + home dir. */
-    public static String consolePreamble() {
-        return "cd ~; export XDG_RUNTIME_DIR=" + XDG_RUNTIME_DIR +
-               " WAYLAND_DISPLAY=" + WAYLAND_DISPLAY +
-               " XDG_SESSION_TYPE=wayland" +
-               " MESA_LOADER_DRIVER_OVERRIDE=kgsl GALLIUM_DRIVER=kgsl FD_FORCE_KGSL=1";
+    /** Preamble written to a fresh console session: home dir + the launch
+     *  environment (built-ins overlaid with customEnv) as exports. */
+    public static String consolePreamble(List<String[]> customEnv) {
+        return "cd ~; " + EnvVars.exportLine(
+                EnvVars.merge(defaultEnvPairs(), customEnv));
     }
 }

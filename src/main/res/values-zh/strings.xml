@@ -22,6 +22,14 @@
     <string name="status_active_stopped_fmt">当前容器:%1$s（已停止）</string>
     <string name="user_btn_fmt">用户:%1$s</string>
     <string name="user_auto">自动</string>
+    <string name="env_btn">环境</string>
+    <string name="env_editor_title_fmt">启动环境变量 — %1$s</string>
+    <string name="env_defaults_fmt">内置：%1$s</string>
+    <string name="env_editor_hint">每行一个 KEY=VALUE，覆盖内置值；值为空表示移除该内置变量；# 开头为注释</string>
+    <string name="env_save">保存</string>
+    <string name="env_clear">清空</string>
+    <string name="env_saved">已保存</string>
+    <string name="env_invalid_line_fmt">无效的行：%1$s</string>
 
     <!-- AppsView / long-press menu -->
     <string name="loading_apps_fmt">正在从 %1$s 加载应用…</string>
@@ -50,7 +58,7 @@
     <string name="console_hint">命令</string>
     <string name="console_ended">[会话已结束]</string>
     <string name="console_exit_confirm">结束 shell 会话？</string>
-    <string name="console_env_note">[anland 环境已导出：XDG_RUNTIME_DIR=%1$s WAYLAND_DISPLAY=%2$s kgsl]</string>
+    <string name="console_env_note">[环境已导出：%1$s]</string>
     <string name="history">历史</string>
     <string name="history_empty">历史为空</string>
     <string name="dialog_ok">确定</string>

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anland.shell.ds.DsCli;
+import com.anland.shell.ds.EnvVars;
 import com.anland.shell.ds.RootExec;
 import com.anland.shell.ds.ShellUtils;
 
@@ -80,7 +81,8 @@ public final class AppLaunchActivity extends Activity {
                 return;
             }
 
-            RootExec.Result r = DsCli.launchApp(container, argv, user);
+            List<String[]> customEnv = EnvVars.parse(Prefs.launchEnv(this, container));
+            RootExec.Result r = DsCli.launchApp(container, argv, user, customEnv);
             if (r.ok) {
                 runOnUiThread(() -> {
                     Toast.makeText(this, getString(R.string.launch_ok_fmt, appName),

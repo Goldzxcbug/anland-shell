@@ -39,6 +39,18 @@ public final class Prefs {
                 user == null ? "" : user).apply();
     }
 
+    /** Custom launch environment for a container: KEY=VALUE lines merged
+     *  over the built-ins (empty value removes the built-in, # = comment).
+     *  "" = built-ins only. */
+    public static String launchEnv(Context c, String container) {
+        return sp(c).getString("launch_env." + container, "");
+    }
+
+    public static void setLaunchEnv(Context c, String container, String env) {
+        sp(c).edit().putString("launch_env." + container,
+                env == null ? "" : env).apply();
+    }
+
     /** Console font size in sp (volume keys adjust it in ConsoleActivity). */
     public static int consoleFontSp(Context c) {
         return sp(c).getInt("console_font_sp", 12);

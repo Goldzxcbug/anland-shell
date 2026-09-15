@@ -22,6 +22,14 @@
     <string name="status_active_stopped_fmt">active container: %1$s (stopped)</string>
     <string name="user_btn_fmt">user: %1$s</string>
     <string name="user_auto">auto</string>
+    <string name="env_btn">ENV</string>
+    <string name="env_editor_title_fmt">Launch environment — %1$s</string>
+    <string name="env_defaults_fmt">Built-in: %1$s</string>
+    <string name="env_editor_hint">One KEY=VALUE per line, overlaid on the built-ins; empty value removes the built-in; # comments</string>
+    <string name="env_save">Save</string>
+    <string name="env_clear">Clear</string>
+    <string name="env_saved">saved</string>
+    <string name="env_invalid_line_fmt">Invalid line: %1$s</string>
 
     <!-- AppsView / long-press menu -->
     <string name="loading_apps_fmt">loading apps from %1$s…</string>
@@ -50,7 +58,7 @@
     <string name="console_hint">command</string>
     <string name="console_ended">[session ended]</string>
     <string name="console_exit_confirm">End the shell session?</string>
-    <string name="console_env_note">[anland env exported: XDG_RUNTIME_DIR=%1$s WAYLAND_DISPLAY=%2$s kgsl]</string>
+    <string name="console_env_note">[env exported: %1$s]</string>
     <string name="history">History</string>
     <string name="history_empty">history is empty</string>
     <string name="dialog_ok">OK</string>
