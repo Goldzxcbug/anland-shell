@@ -55,6 +55,7 @@
 
     <!-- ConsoleActivity -->
     <string name="console_title_fmt">%1$s — console</string>
+    <string name="console_title_user_fmt">%1$s — console (%2$s)</string>
     <string name="console_send">Send</string>
     <string name="console_hint">command</string>
     <string name="console_ended">[session ended]</string>

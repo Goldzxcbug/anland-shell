@@ -291,6 +291,10 @@ public final class ShellActivity extends Activity
             String u = item.getItemId() == 0 ? "" : containerUsers.get(item.getItemId() - 1);
             Prefs.setLaunchUser(this, active, u);
             updateUserButton();
+            anlandxInstalled = null;   /* anlandx is per-user — re-detect */
+            updateAppsTab();
+            if (find(active) != null && find(active).running())
+                detectAnlandx(active);
             return true;
         });
         menu.show();
@@ -308,11 +312,12 @@ public final class ShellActivity extends Activity
 
     // -------------------------------------------------------------- anlandx
 
-    /** Probe whether anlandx (X support) is installed in the container and
-     *  reflect it in the Apps tab title. */
+    /** Probe whether anlandx (X support) is installed for the container's
+     *  launch user and reflect it in the Apps tab title. */
     private void detectAnlandx(final String container) {
+        final String user = Prefs.launchUser(this, container);
         RootExec.POOL.execute(() -> {
-            final boolean installed = DsCli.anlandxInstalled(container);
+            final boolean installed = DsCli.anlandxInstalled(container, user);
             main.post(() -> {
                 if (container.equals(Prefs.activeContainer(this))) {
                     anlandxInstalled = installed;

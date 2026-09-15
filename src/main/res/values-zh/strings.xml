@@ -55,6 +55,7 @@
 
     <!-- ConsoleActivity -->
     <string name="console_title_fmt">%1$s — 控制台</string>
+    <string name="console_title_user_fmt">%1$s — 控制台（%2$s）</string>
     <string name="console_send">发送</string>
     <string name="console_hint">命令</string>
     <string name="console_ended">[会话已结束]</string>

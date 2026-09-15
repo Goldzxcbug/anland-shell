@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.anland.shell.ds.DsCli;
 import com.anland.shell.ds.EnvVars;
+import com.anland.shell.ds.RootExec;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,13 +32,16 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * In-container root console over the persistent session started by
+ * In-container console over the persistent session started by
  * {@link DsCli#consoleArgv} (DS_NO_PROXY=1 … run sh): lines are written to
  * the process stdin, output streams back through a reader thread, and cd/env
- * state persists for the life of the session. This is a plain pipe session,
- * not a PTY — no prompt echo, no Tab completion, no control characters.
- * Volume keys adjust the font size; the manifest's configChanges keeps the
- * process alive across rotation.
+ * state persists for the life of the session. The session runs as the
+ * selected launch user (auto-detected desktop user by default) — the same
+ * user app launches use — so its ~/.anlandx display is exported and Xwayland
+ * admits the connection. This is a plain pipe session, not a PTY — no prompt
+ * echo, no Tab completion, no control characters. Volume keys adjust the
+ * font size; the manifest's configChanges keeps the process alive across
+ * rotation.
  */
 public final class ConsoleActivity extends Activity {
 
@@ -50,6 +54,7 @@ public final class ConsoleActivity extends Activity {
 
     private ScrollView scroll;
     private TextView output;
+    private TextView title;
     private EditText input;
     private Button sendBtn;
     private boolean sessionDead;
@@ -71,13 +76,14 @@ public final class ConsoleActivity extends Activity {
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
         header.setPadding(dp(16), dp(10), dp(12), dp(4));
-        TextView title = new TextView(this);
-        title.setText(getString(R.string.console_title_fmt, container));
-        title.setTextSize(16);
-        title.setTextColor(getResources().getColor(R.color.text_primary));
-        title.setSingleLine(true);
-        title.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        header.addView(title, new LinearLayout.LayoutParams(
+        TextView titleView = new TextView(this);
+        titleView.setText(getString(R.string.console_title_fmt, container));
+        titleView.setTextSize(16);
+        titleView.setTextColor(getResources().getColor(R.color.text_primary));
+        titleView.setSingleLine(true);
+        titleView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        title = titleView;
+        header.addView(titleView, new LinearLayout.LayoutParams(
                 0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         Button history = new Button(this);
         history.setText(R.string.history);
@@ -135,8 +141,27 @@ public final class ConsoleActivity extends Activity {
     // ----------------------------------------------------------------- session
 
     private void startSession() {
+        /* resolve the launch user first (auto = first non-root account of
+         * the container user list, same rule as app launches): the session
+         * runs as that user, so its home, env and ~/.anlandx display all
+         * match what app launches see */
+        final String chosen = Prefs.launchUser(this, container);
+        RootExec.POOL.execute(() -> {
+            String user = chosen;
+            if (user.isEmpty())
+                user = DsCli.autoUser(container);
+            final String resolved = user;
+            runOnUiThread(() -> openSession(resolved));
+        });
+    }
+
+    private void openSession(String user) {
+        if (isDestroyed() || isFinishing())
+            return;
+        if (!user.isEmpty() && !"root".equals(user))
+            title.setText(getString(R.string.console_title_user_fmt, container, user));
         try {
-            proc = new ProcessBuilder(DsCli.consoleArgv(container))
+            proc = new ProcessBuilder(DsCli.consoleArgv(container, user))
                     .redirectErrorStream(true)
                     .start();
         } catch (IOException e) {
@@ -170,8 +195,8 @@ public final class ConsoleActivity extends Activity {
         reader.start();
 
         /* preamble: cd ~ + launch env (built-ins + this container's
-           customizations). Echoed locally — the non-tty sh prints nothing
-           back for it. */
+         * customizations) + DISPLAY from ~/.anlandx when anlandx runs.
+         * Echoed locally — the non-tty sh prints nothing back for it. */
         List<String[]> customEnv = EnvVars.parse(Prefs.launchEnv(this, container));
         List<String[]> merged = EnvVars.merge(DsCli.defaultEnvPairs(), customEnv);
         append(getString(R.string.console_env_note,
