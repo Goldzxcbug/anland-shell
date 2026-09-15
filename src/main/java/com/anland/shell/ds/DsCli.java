@@ -33,6 +33,10 @@ import java.util.List;
  *     wayland by itself) plus the kgsl Mesa overrides, as the container's
  *     desktop user (chromium/electron refuse root), detached via nohup so
  *     `run` returns immediately and the process survives this app entirely.
+ *   · X apps: the anlandx user service (Xwayland -rootless + mini-wm,
+ *     xwm/setupanlandx.sh) publishes its display as ":N" in the desktop
+ *     user's ~/.anlandx while running — the session probe reads it as
+ *     DISPLAY, preferring it over the legacy :0 socket.
  */
 public final class DsCli {
 
@@ -268,7 +272,7 @@ public final class DsCli {
         public String user;
         public String home;
         public String bus;    /* unix:path=/run/user/<uid>/bus, if present */
-        public String disp;   /* :0, if an Xwayland socket exists */
+        public String disp;   /* X display: anlandx ":N" from ~/.anlandx, else :0 */
         public String xa;     /* first /run/user/<uid>/xauth_* file, if any */
     }
 
@@ -276,11 +280,14 @@ public final class DsCli {
      *  entry); BUS/DISP/XA only when the corresponding sockets exist. */
     private static final String PROBE_EMIT =
             "uid=$(echo \"$ent\" | cut -d: -f3)\n" +
+            "home=$(echo \"$ent\" | cut -d: -f6)\n" +
             "echo \"UID=$uid\"\n" +
             "echo \"USER=${ent%%:*}\"\n" +
-            "echo \"HOME=$(echo \"$ent\" | cut -d: -f6)\"\n" +
+            "echo \"HOME=$home\"\n" +
             "[ -S \"/run/user/$uid/bus\" ] && echo \"BUS=unix:path=/run/user/$uid/bus\"\n" +
             "[ -S /tmp/.X11-unix/X0 ] && echo \"DISP=:0\"\n" +
+            "ax=$(cat \"$home/.anlandx\" 2>/dev/null)\n" +
+            "[ -n \"$ax\" ] && echo \"DISP=$ax\"\n" +
             "xa=$(ls /run/user/$uid/xauth_* 2>/dev/null | head -1)\n" +
             "[ -n \"$xa\" ] && echo \"XA=$xa\"\n";
 
@@ -433,6 +440,18 @@ public final class DsCli {
         for (String[] e : byUid)
             out.add(e[1]);
         return out;
+    }
+
+    /** Whether anlandx (rootless Xwayland + mini-wm user service) is
+     *  installed in the container: setupanlandx.sh drops anlandx-start into
+     *  a user's ~/.local/bin — any account counts. */
+    public static boolean anlandxInstalled(String name) {
+        RootExec.Result r = runSh(name,
+                "[ -e /root/.local/bin/anlandx-start ] && exit 0\n" +
+                "for h in /home/*; do " +
+                "[ -e \"$h/.local/bin/anlandx-start\" ] && exit 0; done\n" +
+                "exit 1", 15_000);
+        return r.ok;
     }
 
     // ---------------------------------------------------------------- console

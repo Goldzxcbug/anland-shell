@@ -4,6 +4,7 @@
 
     <!-- ShellActivity -->
     <string name="tab_apps">应用</string>
+    <string name="tab_apps_no_anlandx">应用 - 未安装 Anlandx</string>
     <string name="tab_containers">容器</string>
     <string name="refresh">刷新</string>
     <string name="loading">刷新中…</string>

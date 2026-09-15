@@ -55,6 +55,9 @@ public final class ShellActivity extends Activity
     private TextView tabContainers, tabApps;
     private Button userBtn;
     private List<String> containerUsers = Collections.emptyList();
+    /** anlandx detection for the active container (null = not checked —
+     *  container stopped, or the probe has not answered yet). */
+    private Boolean anlandxInstalled;
 
     private List<ContainerState> containers = Collections.emptyList();
     private boolean refreshing;
@@ -187,6 +190,8 @@ public final class ShellActivity extends Activity
             containersView.setContainers(list, "");
             appsView.setContainer("", false);
             containerUsers = Collections.emptyList();
+            anlandxInstalled = null;
+            updateAppsTab();
             status.setText(getString(R.string.ds_unavailable_fmt, DsCli.unavailableReason()));
             return;
         }
@@ -194,6 +199,8 @@ public final class ShellActivity extends Activity
             containersView.setContainers(list, "");
             appsView.setContainer("", false);
             containerUsers = Collections.emptyList();
+            anlandxInstalled = null;
+            updateAppsTab();
             status.setText(R.string.status_no_containers);
             return;
         }
@@ -218,10 +225,14 @@ public final class ShellActivity extends Activity
         containersView.setContainers(list, active);
         appsView.setContainer(active, running);
         updateUserButton();
-        if (running)
+        anlandxInstalled = null;
+        updateAppsTab();
+        if (running) {
             loadUsers(active);
-        else
+            detectAnlandx(active);
+        } else {
             containerUsers = Collections.emptyList();
+        }
 
         /* 启动时自动拉起容器 — the check fires once per activity instance */
         boolean needAutoStart = c != null && !running && !autoStarted;
@@ -293,6 +304,29 @@ public final class ShellActivity extends Activity
                     containerUsers = users;
             });
         });
+    }
+
+    // -------------------------------------------------------------- anlandx
+
+    /** Probe whether anlandx (X support) is installed in the container and
+     *  reflect it in the Apps tab title. */
+    private void detectAnlandx(final String container) {
+        RootExec.POOL.execute(() -> {
+            final boolean installed = DsCli.anlandxInstalled(container);
+            main.post(() -> {
+                if (container.equals(Prefs.activeContainer(this))) {
+                    anlandxInstalled = installed;
+                    updateAppsTab();
+                }
+            });
+        });
+    }
+
+    /** Apps tab title: plain "Apps" while anlandx is present or unchecked,
+     *  "Apps - Anlandx not installed" once known missing. */
+    private void updateAppsTab() {
+        tabApps.setText(anlandxInstalled == null || anlandxInstalled
+                ? R.string.tab_apps : R.string.tab_apps_no_anlandx);
     }
 
     // ------------------------------------------------------------ launch env
@@ -371,10 +405,14 @@ public final class ShellActivity extends Activity
         containersView.setContainers(containers, name);
         appsView.setContainer(name, running);
         updateUserButton();
-        if (running)
+        anlandxInstalled = null;
+        updateAppsTab();
+        if (running) {
             loadUsers(name);
-        else
+            detectAnlandx(name);
+        } else {
             containerUsers = Collections.emptyList();
+        }
         if (c != null && running)
             status.setText(getString(R.string.status_active_running_fmt, name, c.pid));
         else

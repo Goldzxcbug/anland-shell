@@ -4,6 +4,7 @@
 
     <!-- ShellActivity -->
     <string name="tab_apps">Apps</string>
+    <string name="tab_apps_no_anlandx">Apps - Anlandx not installed</string>
     <string name="tab_containers">Containers</string>
     <string name="refresh">Refresh</string>
     <string name="loading">refreshing…</string>
