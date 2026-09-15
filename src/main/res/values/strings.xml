@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Anland Shell</string>
+
+    <!-- ShellActivity -->
+    <string name="tab_apps">Apps</string>
+    <string name="tab_containers">Containers</string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">refreshing…</string>
+    <string name="enter_console">Enter</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="apps">Apps</string>
+    <string name="running_fmt">running · pid %1$d</string>
+    <string name="stopped">stopped</string>
+    <string name="starting_fmt">starting %1$s…</string>
+    <string name="stopping_fmt">stopping %1$s…</string>
+    <string name="stop_confirm_fmt">Stop container %1$s? Everything running inside will be killed.</string>
+    <string name="ds_unavailable_fmt">droidspaces unavailable: %1$s</string>
+    <string name="status_no_containers">no containers defined (/data/local/Droidspaces/Containers is empty)</string>
+    <string name="status_active_running_fmt">active container: %1$s (running, pid %2$d)</string>
+    <string name="status_active_stopped_fmt">active container: %1$s (stopped)</string>
+    <string name="user_btn_fmt">user: %1$s</string>
+    <string name="user_auto">auto</string>
+
+    <!-- AppsView / long-press menu -->
+    <string name="loading_apps_fmt">loading apps from %1$s…</string>
+    <string name="no_apps">no applications found in this container</string>
+    <string name="apps_need_running">container is not running — start it first</string>
+    <string name="app_count_fmt">%1$d apps</string>
+    <string name="no_container_selected">no container selected</string>
+    <string name="load_failed_fmt">failed: %1$s</string>
+    <string name="pin_shortcut">Pin to home screen</string>
+    <string name="app_info">App info</string>
+    <string name="pinned_request">Requesting shortcut…</string>
+    <string name="pinned_fallback">Launcher does not support pinning — sent legacy shortcut broadcast</string>
+
+    <!-- AppLaunchActivity -->
+    <string name="launching_fmt">Launching %1$s…</string>
+    <string name="launch_starting_fmt">starting container %1$s…</string>
+    <string name="launch_ok_fmt">launched %1$s</string>
+    <string name="launch_failed_fmt">failed to launch %1$s: %2$s</string>
+    <string name="start_failed_fmt">container %1$s failed to start: %2$s</string>
+    <string name="start_timeout_fmt">container %1$s did not come up in time</string>
+    <string name="launch_empty_exec">empty Exec</string>
+
+    <!-- ConsoleActivity -->
+    <string name="console_title_fmt">%1$s — console</string>
+    <string name="console_send">Send</string>
+    <string name="console_hint">command</string>
+    <string name="console_ended">[session ended]</string>
+    <string name="console_exit_confirm">End the shell session?</string>
+    <string name="console_env_note">[anland env exported: XDG_RUNTIME_DIR=%1$s WAYLAND_DISPLAY=%2$s kgsl]</string>
+    <string name="history">History</string>
+    <string name="history_empty">history is empty</string>
+    <string name="dialog_ok">OK</string>
+</resources>

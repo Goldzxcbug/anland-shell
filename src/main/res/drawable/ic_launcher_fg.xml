@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shell glyph: a ">" prompt chevron with an underscore cursor, scaled into
+     the adaptive-icon safe zone (center 66/108dp). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:pivotX="54"
+        android:pivotY="54">
+        <path
+            android:fillColor="#7EC8E3"
+            android:pathData="M26,32 L50,54 L26,76 L36,76 L60,54 L36,32 Z"/>
+        <path
+            android:fillColor="#7EC8E3"
+            android:pathData="M62,70 L88,70 L88,78 L62,78 Z"/>
+    </group>
+</vector>

@@ -1,0 +1,9 @@
+# Gradle build outputs (root project IS the app)
+build/
+.gradle/
+
+# Debug signing (generated locally; bootstrapped by keytool in `make apk`)
+debug.keystore
+
+# Local SDK path
+local.properties

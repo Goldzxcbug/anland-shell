@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Anland Shell</string>
+
+    <!-- ShellActivity -->
+    <string name="tab_apps">应用</string>
+    <string name="tab_containers">容器</string>
+    <string name="refresh">刷新</string>
+    <string name="loading">刷新中…</string>
+    <string name="enter_console">进入</string>
+    <string name="start">启动</string>
+    <string name="stop">停止</string>
+    <string name="apps">应用</string>
+    <string name="running_fmt">运行中 · PID %1$d</string>
+    <string name="stopped">已停止</string>
+    <string name="starting_fmt">正在启动 %1$s…</string>
+    <string name="stopping_fmt">正在停止 %1$s…</string>
+    <string name="stop_confirm_fmt">停止容器 %1$s？其中运行的一切都会被终止。</string>
+    <string name="ds_unavailable_fmt">droidspaces 不可用：%1$s</string>
+    <string name="status_no_containers">没有已定义的容器（/data/local/Droidspaces/Containers 为空）</string>
+    <string name="status_active_running_fmt">当前容器：%1$s（运行中，PID %2$d）</string>
+    <string name="status_active_stopped_fmt">当前容器:%1$s（已停止）</string>
+    <string name="user_btn_fmt">用户:%1$s</string>
+    <string name="user_auto">自动</string>
+
+    <!-- AppsView / long-press menu -->
+    <string name="loading_apps_fmt">正在从 %1$s 加载应用…</string>
+    <string name="no_apps">此容器内未发现应用</string>
+    <string name="apps_need_running">容器未运行 — 请先启动</string>
+    <string name="app_count_fmt">%1$d 个应用</string>
+    <string name="no_container_selected">未选择容器</string>
+    <string name="load_failed_fmt">失败:%1$s</string>
+    <string name="pin_shortcut">固定到桌面</string>
+    <string name="app_info">应用信息</string>
+    <string name="pinned_request">正在请求创建快捷方式…</string>
+    <string name="pinned_fallback">启动器不支持固定 — 已发送旧版快捷方式广播</string>
+
+    <!-- AppLaunchActivity -->
+    <string name="launching_fmt">正在启动 %1$s…</string>
+    <string name="launch_starting_fmt">正在启动容器 %1$s…</string>
+    <string name="launch_ok_fmt">已启动 %1$s</string>
+    <string name="launch_failed_fmt">启动 %1$s 失败:%2$s</string>
+    <string name="start_failed_fmt">容器 %1$s 启动失败:%2$s</string>
+    <string name="start_timeout_fmt">容器 %1$s 未在时限内启动</string>
+    <string name="launch_empty_exec">Exec 为空</string>
+
+    <!-- ConsoleActivity -->
+    <string name="console_title_fmt">%1$s — 控制台</string>
+    <string name="console_send">发送</string>
+    <string name="console_hint">命令</string>
+    <string name="console_ended">[会话已结束]</string>
+    <string name="console_exit_confirm">结束 shell 会话？</string>
+    <string name="console_env_note">[anland 环境已导出：XDG_RUNTIME_DIR=%1$s WAYLAND_DISPLAY=%2$s kgsl]</string>
+    <string name="history">历史</string>
+    <string name="history_empty">历史为空</string>
+    <string name="dialog_ok">确定</string>
+</resources>

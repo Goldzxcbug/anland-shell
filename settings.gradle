@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+// Single-module gradle project: root project IS the application (same layout
+// convention as the anland repo's app/). Zero third-party dependencies —
+// all privileged work goes through `su -c` + the droidspaces CLI.
+rootProject.name = "anland-shell"

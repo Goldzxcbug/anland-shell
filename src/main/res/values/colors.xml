@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_bg">#101418</color>
+
+    <!-- Programmatic UI palette (dark, matches anland's window manager). -->
+    <color name="bg">#101418</color>
+    <color name="text_primary">#E6EDF3</color>
+    <color name="text_secondary">#9AA4B2</color>
+    <color name="accent">#7EC8E3</color>
+    <color name="accent_dim">#337EC8E3</color>
+</resources>
